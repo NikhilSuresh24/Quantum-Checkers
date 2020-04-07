@@ -1,5 +1,3 @@
-# hello world
-
 import numpy as np
 import math
 from enum import Enum
