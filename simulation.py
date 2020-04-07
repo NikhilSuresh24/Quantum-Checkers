@@ -22,15 +22,18 @@ class Simulator:
         self.state_1 = np.array([0, 1, -1, 0])
         self.positions = np.array(
             [[x, y] for x in self.x_positions for y in self.y_positions])
-        self.CNOT_MATRIX = np.array(
+        self.CNOT_MATRIX1 = np.array(
             [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]) #TODO: there's a second CNOT
         self.CNOT_MATRIX2 = np.array(
             [[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
         self.HADAMARD_MATRIX = (
             1 / math.sqrt(2)) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, -1], [1, 0, -1, 0]])
 
-    def CNOT(self, state):
-        return np.matmul(self.CNOT_MATRIX, state)
+    def CNOT1(self, state):
+        return np.matmul(self.CNOT_MATRIX1, state)
+    
+    def CNOT2(self, state):
+        return np.matmul(self.CNOT_MATRIX2, state)
 
     def Hadamard(self, state):
         return np.matmul(self.HADAMARD_MATRIX, state)
