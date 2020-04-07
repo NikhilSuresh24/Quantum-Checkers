@@ -23,7 +23,7 @@ class Simulator:
         self.positions = np.array(
             [[x, y] for x in self.x_positions for y in self.y_positions])
         self.CNOT_MATRIX = np.array(
-            [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]]) #TODO: there's a second CNOT
+            [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]) #TODO: there's a second CNOT
         self.HADAMARD_MATRIX = (
             1 / math.sqrt(2)) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, -1], [1, 0, -1, 0]])
 
