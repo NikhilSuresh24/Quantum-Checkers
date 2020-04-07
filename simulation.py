@@ -64,4 +64,3 @@ class Quibit:
 		self.loc=[[1,2],[3,4]]
 	def get_prob(self, i, j):
 		pass
-	        
