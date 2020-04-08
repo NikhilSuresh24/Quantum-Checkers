@@ -15,8 +15,6 @@ import random
 
 
 class Simulator:
-    # measurement sends state to eigenvector of corresponding eigenvalue of measurement
-    # eigenvalues are the locations
     def __init__(self, x_pos_range=2, y_pos_range=2, init_state=np.array([0, 1, -1, 0]), init_position=np.array([0, 0])):
         super().__init__()
         self.x_positions = np.arange(-x_pos_range, x_pos_range + 1)
@@ -27,6 +25,8 @@ class Simulator:
         self.qubits = [Qubit(init_state, init_position, possible_positions), Qubit(
             init_state, init_position, possible_positions)]
 
+        self.updated_qubit_idx = -1
+        self.points = 0  # points in game
         # Gates
         self.CNOT_MATRIX_1 = np.array(
             [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
@@ -68,21 +68,39 @@ class Simulator:
             if position_diff[diff_position] > 0:
                 # calls CNOT_1 on qubit 2 if its lower than qubit 1 in the differing coordinate
                 self.qubits[1].update_state(self.CNOT_1(self.qubits[1].state))
+                self.updated_qubit_idx = 1
             else:
                 self.qubits[0].update_state(self.CNOT_2(self.qubits[0].state))
+                self.updated_qubit_idx = 0
         else:  # if they're at the same position or don't have any shared coordinates, call Hadamard on a random one
-            chosen_qubit = random.choice(self.qubits)
+            self.updated_qubit_idx = random.randint(0, len(self.qubits))
+            chosen_qubit = self.qubits[updated_qubit_idx]
             chosen_qubit.update_state(self.Hadamard(chosen_qubit.state))
 
-    def simulate(self, delta_time):  
+    def spin_strategy(self):  # TODO:implement
+        '''Given the locations of the qubits, choose to multiply the unaltered qubit by one of the Pauli Matrices.
+           Measure the spin of the qubit afterwards, and gain/lose points according to the spin'''
+        pass
+
+    def step(self, delta_time):
         '''simulate the entire process'''
         for qubit in self.qubits:
             qubit.get_next_location()
 
         self.compare_positions()
 
+    def simulate(self, delta_time, num_steps, is_graphing=true): #TODO: implement graphing
+        for i in num_steps:
+            self.step(delta_time)
+
+        if is_graphing:
+            pass
+
+    def create_plot(self): #TODO: implement
+        pass
+
 
 if __name__ == "__main__":
     sim = Simulator()
-    #TODO: uncomment and put in delta_time
-    #sim.simulate()
+    # TODO: uncomment and put in delta_time
+    # sim.simulate()
