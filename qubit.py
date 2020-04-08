@@ -17,3 +17,7 @@ class Qubit:
     def update_state(self, new_state):
         '''set new state depending on what simulation does'''
         self.state = new_state
+
+    def get_spin(self): #TODO: implement
+        '''gets spin of qubit and adjusts the state accordingly'''
+        pass
