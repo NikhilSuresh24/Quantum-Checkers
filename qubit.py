@@ -45,8 +45,5 @@ class Qubit:
     def Psi(self, t, x, y):
         print(int(t*self.N), x+self.xcenter-1, y+self.ycenter-1)
         return self.psi[int(t*self.N)][x+self.xcenter-1][y+self.ycenter-1]
+        
     def Prob(self, t, x, y): return np.absolute(self.Psi(t, x, y))
-
-q1 = Qubit(N=2)
-print(q1)
-print(q1.Psi(0.9, 1, 2))
