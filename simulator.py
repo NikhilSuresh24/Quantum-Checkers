@@ -15,13 +15,14 @@ import random
 
 
 class Simulator:
-    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=np.array([0, 1, -1, 0]), init_position=np.array([0, 0])):
+    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=((1/math.sqrt(2)) * np.array([0, 1, -1, 0])), init_position=np.zeros(2)):
         super().__init__()
         self.x_positions = np.arange(-x_pos_range, x_pos_range + 1)
         self.y_positions = np.arange(-y_pos_range, y_pos_range + 1)
         self.possible_positions = np.array(
             [[x, y] for x in self.x_positions for y in self.y_positions])
 
+        self.state = init_state
         self.qubits = [Qubit(init_state, init_position, possible_positions), Qubit(
             init_state, init_position, possible_positions)]
 
@@ -34,30 +35,58 @@ class Simulator:
             [[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
         self.HADAMARD_MATRIX = (
             1 / math.sqrt(2)) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, -1], [1, 0, -1, 0]])
-        self.PAULI_MATRIX_X = np.kron(
+
+        self.PAULI_MATRIX_X_1 = np.kron(
             np.array([[0, 1], [1, 0]]), np.identity(2))
-        self.PAULI_MATRIX_Y = np.kron(
+        self.PAULI_MATRIX_Y_1 = np.kron(
             np.array([[0, -1j], [1j, 0]]), np.identity(2))
-        self.PAULI_MATRIX_Z = np.kron(
+        self.PAULI_MATRIX_Z_1 = np.kron(
             np.array([[1, 0], [0, -1]]), np.identity(2))
 
+        self.PAULI_MATRIX_X_2 = np.kron(np.identity(2),
+                                        np.array([[0, 1], [1, 0]]))
+        self.PAULI_MATRIX_Y_2 = np.kron(np.identity(2),
+                                        np.array([[0, -1j], [1j, 0]]))
+        self.PAULI_MATRIX_Z_2 = np.kron(np.identity(2),
+                                        np.array([[1, 0], [0, -1]]))
+
     def CNOT_1(self, state):
+        '''CNOT with the first qubit as the control'''
         return np.matmul(self.CNOT_MATRIX_1, state)
 
     def CNOT_2(self, state):
+        '''CNOT with the second qubit as the control'''
         return np.matmul(self.CNOT_MATRIX_2, state)
 
     def Hadamard(self, state):
+        '''Hadamard matrix 4x4'''
         return np.matmul(self.HADAMARD_MATRIX, state)
 
-    def Pauli_X(self, state):
-        return np.matmul(self.PAULI_MATRIX_X, state)
+    def Pauli_X_1(self, state):
+        '''Pauli X matrix on the first qubit'''
+        return np.matmul(self.PAULI_MATRIX_X_1, state)
 
-    def Pauli_Y(self, state):
-        return np.matmul(self.PAULI_MATRIX_Y, state)
+    def Pauli_Y_1(self, state):
+        '''Pauli Y matrix on the first qubit'''
+        return np.matmul(self.PAULI_MATRIX_Y_1, state)
 
-    def Pauli_Z(self, state):
-        return np.matmul(self.PAULI_MATRIX_Z, state)
+    def Pauli_Z_1(self, state):
+        '''Pauli Z matrix on the first qubit'''
+        return np.matmul(self.PAULI_MATRIX_Z_1, state)
+
+    def Pauli_X_2(self, state):
+        '''Pauli X matrix on the second qubit'''
+        return np.matmul(self.PAULI_MATRIX_X_2, state)
+
+    def Pauli_Y_2(self, state):
+        '''Pauli Y matrix on the second qubit'''
+        return np.matmul(self.PAULI_MATRIX_Y_2, state)
+
+
+    def Pauli_Z_2(self, state):
+        '''Pauli Z matrix on the second qubit'''
+        return np.matmul(self.PAULI_MATRIX_Z_2, state)
+
 
     def compare_positions(self):
         position_diff = self.qubits[0].position - self.qubits[1].position
@@ -82,6 +111,10 @@ class Simulator:
            Measure the spin of the qubit afterwards, and gain/lose points according to the spin'''
         pass
 
+    def get_spin(self): #TODO: implement
+        '''gets spin of qubit and adjusts the state accordingly'''
+        pass 
+
     def step(self, delta_time):
         '''simulate the entire process'''
         for qubit in self.qubits:
@@ -89,14 +122,14 @@ class Simulator:
 
         self.compare_positions()
 
-    def simulate(self, delta_time, num_steps, is_graphing=true): #TODO: implement graphing
+    def simulate(self, delta_time, num_steps, is_graphing=true):  # TODO: implement graphing
         for i in num_steps:
             self.step(delta_time)
 
         if is_graphing:
             pass
 
-    def create_plot(self): #TODO: implement
+    def create_plot(self):  # TODO: implement
         pass
 
 
