@@ -1,18 +1,25 @@
 import numpy as np
 
 class Qubit:
-    def __init__(self, init_wavefunction=-1, rows=5, cols=5, timesteps=1, N=10):
+    def __init__(self, init_wavefunction=-1, rows=5, cols=5, maxtime=1, N=10):
         self.wavefunction = init_wavefunction
         self.rows = rows # first index
         self.cols = cols # second index
+        self.xcenter = int(np.ceil(self.rows/2))
+        self.ycenter = int(np.ceil(self.cols/2))
+
         self.k = 0
-        self.psi = []
-        self.timesteps = timesteps
         self.N = N
+        self.timesteps = maxtime*self.N+1
+
+        self.psi = []
         if self.wavefunction==-1:
             self.wavefunction = [[0 for i in range(self.rows)] for j in range(self.cols)]
-            self.wavefunction[round(rows/2)][round(cols/2)] = 1
+            self.wavefunction[int(np.ceil(rows/2))][int(np.ceil(cols/2))] = 1
         self.generate_wavefunction()
+    
+    def __str__(self):
+        return "x: "+str(1-self.xcenter)+" -> "+str(self.xcenter-1)+"\n"+"y: "+str(1-self.ycenter)+" -> "+str(self.ycenter-1)+"\n"+"k: 0 -> "+str(self.timesteps)+"\n"+"N="+str(self.N)
 
     def propogate_wavefunction(self):
         new_wavefunction =  [[0 for i in range(self.rows)] for j in range(self.cols)]
@@ -26,13 +33,19 @@ class Qubit:
         print(self.wavefunction)
 
     def generate_wavefunction(self):
-        if self.timesteps > 0:
-            self.timesteps -= 1
+        if self.timesteps-self.k > 0:
             self.k += 1
             self.propogate_wavefunction()
         else:
             print("All done")
             return(self.psi)
 
-    def Psi(self, t, x, y): return self.psi[t*self.N][x][y]
+    def Psi(self, t, x, y):
+        print(int(t*self.N), x+self.xcenter, self.ycenter)
+        return self.psi[int(t*self.N)][x+self.xcenter][y+self.ycenter]
     def Prob(self, t, x, y): return np.absolute(self.Psi(t, x, y))
+
+q1 = Qubit()
+print(q1)
+print(q1.psi)
+# q1.Psi(0.9, 1, 3)
