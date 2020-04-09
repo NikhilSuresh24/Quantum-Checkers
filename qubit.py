@@ -13,7 +13,3 @@ class Qubit:
         '''Use get_probability to get probability of being at any locations, uses those probabilities to get the next position, then finally updates position'''
         pass
 
-    def update_state(self, new_state):
-        '''set new state depending on what simulation does'''
-        self.state = new_state
-

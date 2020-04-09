@@ -1,7 +1,7 @@
 import numpy as np
+from numpy import linalg as LA
 import math
 from enum import Enum
-from pauli import Pauli
 from qubit import Qubit
 import random
 
@@ -28,13 +28,16 @@ class Simulator:
 
         self.updated_qubit_idx = -1
         self.points = 0  # points in game
-        # Gates
+
+        # Useful Matrices
         self.CNOT_MATRIX_1 = np.array(
             [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
         self.CNOT_MATRIX_2 = np.array(
             [[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
-        self.HADAMARD_MATRIX = (
-            1 / math.sqrt(2)) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, -1], [1, 0, -1, 0]])
+        self.HADAMARD_MATRIX_1 = (
+            1 / math.sqrt(2)) * np.kron(np.array([[1, 1], [1, -1]]), np.identity(2))
+        self.HADAMARD_MATRIX_2 = (1 / math.sqrt(2)) * \
+            np.kron(np.identity(2), np.array([[1, 1], [1, -1]]))
 
         self.PAULI_MATRIX_X_1 = np.kron(
             np.array([[0, 1], [1, 0]]), np.identity(2))
@@ -58,9 +61,13 @@ class Simulator:
         '''CNOT with the second qubit as the control'''
         return np.matmul(self.CNOT_MATRIX_2, state)
 
-    def Hadamard(self, state):
-        '''Hadamard matrix 4x4'''
-        return np.matmul(self.HADAMARD_MATRIX, state)
+    def Hadamard_1(self, state):
+        '''Hadamard on the first qubit'''
+        return np.matmul(self.HADAMARD_MATRIX_1, state)
+
+    def Hadamard_2(self, state):
+        '''Hadamard on the second qubit'''
+        return np.matmul(self.HADAMARD_MATRIX_2, state)
 
     def Pauli_X_1(self, state):
         '''Pauli X matrix on the first qubit'''
@@ -82,11 +89,12 @@ class Simulator:
         '''Pauli Y matrix on the second qubit'''
         return np.matmul(self.PAULI_MATRIX_Y_2, state)
 
-
     def Pauli_Z_2(self, state):
         '''Pauli Z matrix on the second qubit'''
         return np.matmul(self.PAULI_MATRIX_Z_2, state)
 
+    def set_state(self, new_state):
+        self.state = new_state
 
     def compare_positions(self):
         position_diff = self.qubits[0].position - self.qubits[1].position
@@ -96,24 +104,28 @@ class Simulator:
             diff_position = 1 - zero_positions[0]
             if position_diff[diff_position] > 0:
                 # calls CNOT_1 on qubit 2 if its lower than qubit 1 in the differing coordinate
-                self.qubits[1].update_state(self.CNOT_1(self.qubits[1].state))
+                self.set_state(self.CNOT_1(self.state))
                 self.updated_qubit_idx = 1
             else:
-                self.qubits[0].update_state(self.CNOT_2(self.qubits[0].state))
+                self.set_state(self.CNOT_2(self.state))
                 self.updated_qubit_idx = 0
         else:  # if they're at the same position or don't have any shared coordinates, call Hadamard on a random one
             self.updated_qubit_idx = random.randint(0, len(self.qubits))
-            chosen_qubit = self.qubits[updated_qubit_idx]
-            chosen_qubit.update_state(self.Hadamard(chosen_qubit.state))
+            if self.updated_qubit_idx == 0:
+                self.set_state(self.Hadamard_1(self.state))
+            else:
+                self.set_state(self.Hadamard_2(self.state))
 
     def spin_strategy(self):  # TODO:implement
         '''Given the locations of the qubits, choose to multiply the unaltered qubit by one of the Pauli Matrices.
            Measure the spin of the qubit afterwards, and gain/lose points according to the spin'''
         pass
 
-    def get_spin(self): #TODO: implement
-        '''gets spin of qubit and adjusts the state accordingly'''
-        pass 
+    # def get_spin(self, measurement_matrix):  # TODO: implement
+    #     '''gets spin of qubit and adjusts the state accordingly'''
+    #     values, vecs = LA.eig(measurement_matrix)
+    #     neg_1_position = np.where(values==-1)
+
 
     def step(self, delta_time):
         '''simulate the entire process'''
