@@ -15,7 +15,9 @@ class Qubit:
         self.psi = []
         if self.wavefunction==-1:
             self.wavefunction = [[0 for i in range(self.rows)] for j in range(self.cols)]
-            self.wavefunction[int(np.ceil(rows/2))][int(np.ceil(cols/2))] = 1
+            self.wavefunction[int(np.ceil(rows/2))-1][int(np.ceil(cols/2))-1] = 1
+        print("k=0",self.wavefunction)
+        self.psi.append(self.wavefunction)
         self.generate_wavefunction()
     
     def __str__(self):
@@ -28,9 +30,9 @@ class Qubit:
                 for u in range(self.rows):
                     for v in range(self.cols):
                         new_wavefunction[x][y] += self.wavefunction[u][v] * np.e**((self.N*1j*((u-x)**2+(v-y)**2))/2)
-        self.psi.append(self.wavefunction)
         self.wavefunction = new_wavefunction
-        print(self.wavefunction)
+        self.psi.append(self.wavefunction)
+        print("k="+str(self.k),self.wavefunction)
 
     def generate_wavefunction(self):
         if self.timesteps-self.k > 0:
@@ -45,7 +47,7 @@ class Qubit:
         return self.psi[int(t*self.N)][x+self.xcenter][y+self.ycenter]
     def Prob(self, t, x, y): return np.absolute(self.Psi(t, x, y))
 
-q1 = Qubit()
+q1 = Qubit(N=2)
 print(q1)
 print(q1.psi)
 # q1.Psi(0.9, 1, 3)
