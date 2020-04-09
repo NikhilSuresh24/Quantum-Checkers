@@ -1,9 +1,10 @@
 import numpy as np
 import math
 from enum import Enum
-from pauli import Pauli
-from qubit import Qubit
 import random
+
+from qubit import Qubit
+from spin import Spin
 
 # summary of simulation:
 # combined singlet state is entangled
@@ -15,7 +16,7 @@ import random
 
 
 class Simulator:
-    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=((1/math.sqrt(2)) * np.array([0, 1, -1, 0])), init_position=np.zeros(2)):
+    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=x):
         super().__init__()
         self.x_positions = np.arange(-x_pos_range, x_pos_range + 1)
         self.y_positions = np.arange(-y_pos_range, y_pos_range + 1)
@@ -28,64 +29,7 @@ class Simulator:
 
         self.updated_qubit_idx = -1
         self.points = 0  # points in game
-        # Gates
-        self.CNOT_MATRIX_1 = np.array(
-            [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
-        self.CNOT_MATRIX_2 = np.array(
-            [[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
-        self.HADAMARD_MATRIX = (
-            1 / math.sqrt(2)) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 1, 0, -1], [1, 0, -1, 0]])
 
-        self.PAULI_MATRIX_X_1 = np.kron(
-            np.array([[0, 1], [1, 0]]), np.identity(2))
-        self.PAULI_MATRIX_Y_1 = np.kron(
-            np.array([[0, -1j], [1j, 0]]), np.identity(2))
-        self.PAULI_MATRIX_Z_1 = np.kron(
-            np.array([[1, 0], [0, -1]]), np.identity(2))
-
-        self.PAULI_MATRIX_X_2 = np.kron(np.identity(2),
-                                        np.array([[0, 1], [1, 0]]))
-        self.PAULI_MATRIX_Y_2 = np.kron(np.identity(2),
-                                        np.array([[0, -1j], [1j, 0]]))
-        self.PAULI_MATRIX_Z_2 = np.kron(np.identity(2),
-                                        np.array([[1, 0], [0, -1]]))
-
-    def CNOT_1(self, state):
-        '''CNOT with the first qubit as the control'''
-        return np.matmul(self.CNOT_MATRIX_1, state)
-
-    def CNOT_2(self, state):
-        '''CNOT with the second qubit as the control'''
-        return np.matmul(self.CNOT_MATRIX_2, state)
-
-    def Hadamard(self, state):
-        '''Hadamard matrix 4x4'''
-        return np.matmul(self.HADAMARD_MATRIX, state)
-
-    def Pauli_X_1(self, state):
-        '''Pauli X matrix on the first qubit'''
-        return np.matmul(self.PAULI_MATRIX_X_1, state)
-
-    def Pauli_Y_1(self, state):
-        '''Pauli Y matrix on the first qubit'''
-        return np.matmul(self.PAULI_MATRIX_Y_1, state)
-
-    def Pauli_Z_1(self, state):
-        '''Pauli Z matrix on the first qubit'''
-        return np.matmul(self.PAULI_MATRIX_Z_1, state)
-
-    def Pauli_X_2(self, state):
-        '''Pauli X matrix on the second qubit'''
-        return np.matmul(self.PAULI_MATRIX_X_2, state)
-
-    def Pauli_Y_2(self, state):
-        '''Pauli Y matrix on the second qubit'''
-        return np.matmul(self.PAULI_MATRIX_Y_2, state)
-
-
-    def Pauli_Z_2(self, state):
-        '''Pauli Z matrix on the second qubit'''
-        return np.matmul(self.PAULI_MATRIX_Z_2, state)
 
 
     def compare_positions(self):
