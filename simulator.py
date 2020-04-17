@@ -121,11 +121,19 @@ class Simulator:
            Measure the spin of the qubit afterwards, and gain/lose points according to the spin'''
         pass
 
-    # def get_spin(self, measurement_matrix):  # TODO: implement
-    #     '''gets spin of qubit and adjusts the state accordingly'''
-    #     values, vecs = LA.eig(measurement_matrix)
-    #     neg_1_position = np.where(values==-1)
+    def get_spin(self, measurement_matrix):  #TODO: adjust state
+        '''gets spin of qubit and adjusts the state accordingly'''
+        values, vecs = LA.eig(measurement_matrix)
+        neg_1_position = np.where(values==-1)[0][0] #TODO: this will only return the first index this is true (theoretically should only be one case, but it hasnt been that way in practice)
+        neg_1_vec =  vecs[neg_1_position]
+        prob_neg_one = self.get_probability(neg_1_vec) #prob +1 is 1- prob(-1)
+        if random.random() <= prob_neg_one:
+            return -1
+        else:
+            return 1
 
+    def get_probability(self, eigenvector):
+        return np.matmul(self.state, eigenvector.T) * np.matmul(eigenvector, self.state.T)
 
     def step(self, delta_time):
         '''simulate the entire process'''
@@ -134,7 +142,7 @@ class Simulator:
 
         self.compare_positions()
 
-    def simulate(self, delta_time, num_steps, is_graphing=true):  # TODO: implement graphing
+    def simulate(self, delta_time, num_steps, is_graphing=False):  # TODO: implement graphing
         for i in num_steps:
             self.step(delta_time)
 
