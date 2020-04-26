@@ -5,6 +5,9 @@ from enum import Enum
 from qubit import Qubit
 import random
 
+from qubit import Qubit
+from spin import Spin
+
 # summary of simulation:
 # combined singlet state is entangled
 # take measurement of locations (probabilities determined by schrodinger equation)
@@ -15,7 +18,7 @@ import random
 
 
 class Simulator:
-    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=((1/math.sqrt(2)) * np.array([0, 1, -1, 0])), init_position=np.zeros(2)):
+    def __init__(self, x_pos_range=2, y_pos_range=2, init_state=x):
         super().__init__()
         self.x_positions = np.arange(-x_pos_range, x_pos_range + 1)
         self.y_positions = np.arange(-y_pos_range, y_pos_range + 1)
